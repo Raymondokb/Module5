@@ -1,0 +1,63 @@
+My First knitr Document
+========================
+
+#First level heading
+Raymond
+
+## Introduction
+
+This is some text here
+
+```{r}
+set.seed(1)
+x = rnorm(100)
+mean(x)
+```
+
+```{r computetime, echo=FALSE}
+time = format(Sys.time(), "%a %b %d %X %Y")
+rand = rnorm(1)
+```
+The current time is `r time`. My favorite random number is `r rand`.
+
+
+#Next
+Simulating some data
+```{r simulatedata, echo=TRUE}
+x = rnorm(100); y = x + rnorm(100, sd=0.5)
+```
+
+Scatterplot of the data
+```{r scatterplot, fig.height=4}
+par(mar = c(5, 4, 1, 1), las = 1)
+plot(x, y, main = "My Simulated Data")
+```
+
+#Next
+Making tables with xtable
+
+```{r fitmodel}
+library(datasets)
+data(airquality)
+fit = lm(Ozone ~ Wind + Temp + Solar.R, data = airquality)
+```
+Here is a table of regression coefficients
+
+```{r showtable, results = "asis"}
+library(xtable)
+xt = xtable(summary(fit))
+print(xt, type = "html")
+```
+
+
+
+
+```{r loadData, echo=TRUE}
+aa = read.csv("D:\\Users\\msboon\\Desktop\\For Data science coursera\\Reproducible Research\\repdata%2Fdata%2Factivity\\activity.csv")
+colnames(aa)
+```
+
+```{r totalStepsPerDay, echo=TRUE}
+library(lubridate)
+lewap
+```
