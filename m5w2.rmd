@@ -94,7 +94,7 @@ print(xmm, type="html")
 
 ```{r dailyPattern, echo=TRUE}
 
-
+dp = data.frame(Date= table1[,1], interval = table1[which])
 ```
 
 

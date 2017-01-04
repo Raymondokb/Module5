@@ -11,14 +11,85 @@ for(i in 1:length(all_dates)){
 }
 
 histTable = data.frame(Date = 1:length(unique(aa$date)), Total_Steps = as.numeric(table1[,2]), stringsAsFactors=FALSE)
+#histogram
+qplot(na.omit(histTable$Total_Steps), geom="histogram", bins=10,xlab="Total number of steps", ylab = "Frequency", main="Total steps daily")
+#median and mean
+mean(na.omit(histTable$Total_Steps))
+median(na.omit(histTable$Total_Steps))
 
-qplot(na.omit(histTable$Total_Steps), geom="histogram", bins=30,xlab="Total number of steps")
+
+steps = rep(NA, 61)
+day = rep("NA", 61)
+stepsday = tapply(aa$steps, aa$date, sum, na.rm=T)
+length(stepsday)
 
 
-library(xtable)
-library(datasets)
-data(airquality)
-fit = lm(Ozone ~ Wind + Temp + Solar.R, data = airquality)
-xt = xtable(summary(fit))
-print(xt, type = "html")
+for(i in 1:61){
+     steps[i] <- stepsday[[i]]
+     day[i] = names(stepsday)[i]
+}
 
+df = data.frame(day, steps)
+head(df)
+
+hist(df$steps, main = "Total steps by day", xlab = "Day",col = "green" )
+
+
+##Average daily activty pattern
+timer_series = tapply(aa$steps, aa$interval, mean, na.rm=TRUE)
+plot(row.names(time_series), time_series, type="l", xlab = 
+          "5-min interval", ylab = "Average across all Days",
+     main = "Average number of steps taken", col = "red")
+
+max_intervan = which.max(time_series)
+names(max_interval)
+
+##Imputing missing values
+activity_NA = sum(is.na(aa))
+activity_NA
+
+
+stepsAverage = aggregate(steps ~ innterval, data = aa, FUN - mean)
+fillNA = numeric()
+for(i in 1:nrow(aa)){
+     obs = activity[i,]
+     if(isna(obs$steps)){
+          steps = subset(stepsAverage, interval == obs$interval)$steps
+     } else {
+          steps = obs$steps
+     }
+     fillNA = c(fillNA, steps)
+}
+
+
+new_activty = aa
+new_activty$steps = fillNA
+
+
+
+stepstotal2 = aggregate(steps ~ date, data = new_activity, sum, na.rm=TRUE)
+
+hist(stepstotal2, main = "Total steps by day", xlab = "Day", col = "red")
+
+mean(stepstotal2$steps)
+median(stepstotal2$steps)
+
+day = weekday(aa$date)
+daylevel = vector()
+for(i in 1:nrow(aa)){
+     if (day[i] == "Saturday"){
+          daylevel[i] = "Weekend"
+     } else if (day[i]== "Sunday"){
+          daylevel[i] = "Weekend"
+     } else{
+          daylevel[i] = 'Weekday'
+     }
+}
+aa$daylevel = daylevel
+aa$daylevel = factor(aa$daylevel)
+
+stepsbyday = aggregate(steps ~ interval + +daylevel, data = aa, mean)
+names(stepsbyday) = c("interval", "daylevel", "steps")
+
+xyplot(steps ~ interval |daylevel, stepsbyday, type = "l", layout = c(1,2),
+       xlab = "Interval", ylab = "Number of steps")
