@@ -32,16 +32,16 @@ for(i in 1:61){
 df = data.frame(day, steps)
 head(df)
 
-hist(df$steps, main = "Total steps by day", xlab = "Day",col = "green" )
-
+#hist(df$steps, main = "Total steps by day", xlab = "Day",col = "green" )
+qplot(df$steps, xlab = "Day", ylab = "Frequency", main = "Total steps daily", bins = 15)
 
 ##Average daily activty pattern
-timer_series = tapply(aa$steps, aa$interval, mean, na.rm=TRUE)
+time_series = tapply(aa$steps, aa$interval, mean, na.rm=TRUE)
 plot(row.names(time_series), time_series, type="l", xlab = 
           "5-min interval", ylab = "Average across all Days",
      main = "Average number of steps taken", col = "red")
 
-max_intervan = which.max(time_series)
+max_interval = which.max(time_series)
 names(max_interval)
 
 ##Imputing missing values
@@ -49,11 +49,11 @@ activity_NA = sum(is.na(aa))
 activity_NA
 
 
-stepsAverage = aggregate(steps ~ innterval, data = aa, FUN - mean)
+stepsAverage = aggregate(steps ~ interval, data = aa, FUN = mean)
 fillNA = numeric()
 for(i in 1:nrow(aa)){
-     obs = activity[i,]
-     if(isna(obs$steps)){
+     obs = aa[i,]
+     if(is.na(obs$steps)){
           steps = subset(stepsAverage, interval == obs$interval)$steps
      } else {
           steps = obs$steps
@@ -62,19 +62,20 @@ for(i in 1:nrow(aa)){
 }
 
 
-new_activty = aa
-new_activty$steps = fillNA
+new_activity = aa
+new_activity$steps = fillNA
 
 
 
 stepstotal2 = aggregate(steps ~ date, data = new_activity, sum, na.rm=TRUE)
 
-hist(stepstotal2, main = "Total steps by day", xlab = "Day", col = "red")
+hist(stepstotal2$steps, main = "Total steps by day", xlab = "Day", col = "red")
 
 mean(stepstotal2$steps)
 median(stepstotal2$steps)
 
-day = weekday(aa$date)
+library(lubridate)
+day = weekdays(as.Date(aa$date))
 daylevel = vector()
 for(i in 1:nrow(aa)){
      if (day[i] == "Saturday"){
@@ -90,6 +91,7 @@ aa$daylevel = factor(aa$daylevel)
 
 stepsbyday = aggregate(steps ~ interval + +daylevel, data = aa, mean)
 names(stepsbyday) = c("interval", "daylevel", "steps")
-
+library(ggplot2)
+library(lattice)
 xyplot(steps ~ interval |daylevel, stepsbyday, type = "l", layout = c(1,2),
        xlab = "Interval", ylab = "Number of steps")
